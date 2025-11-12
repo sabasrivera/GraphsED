@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build C++ Project", // Un nombre para tu tarea
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "-g", // <-- IMPORTANTE: Agrega símbolos de depuración
+        "*.cpp",
+        "-o",
+        "programa.exe" // El nombre de tu ejecutable
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true // Marca esta como la tarea de "build" por defecto
+      },
+      "problemMatcher": [
+        "$gcc" // Esto permite a VS Code entender los errores de g++
+      ]
+    }
+  ]
+}
