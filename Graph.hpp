@@ -1,30 +1,26 @@
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
+#ifndef GRAFO_HPP
+#define GRAFO_HPP
 
 #include <iostream>
 #include <list>
 #include <map>
 #include <queue>
 #include <unordered_set>
-#include <vector> 
-#include <limits> 
+#include <vector>
+#include <limits>
 
 using namespace std;
 
-class Graph
+class Grafo
 {
 private:
-    map<string, list<pair<string, int>>> adjList;
+    map<string, list<pair<string, int>>> listaAdyacencia;
 public:
-    // Añade un nodo al mapa si no existe
-    void addNode(string node);
-    // Método para obtener todos los nodos (ciudades)
-    vector<string> getNodes() const;
-    // Añade una arista
-    void addEdge(string src, string dest, int weight = 0, bool directed = false);
-    // Imprime el grafo
-    void printGraph();
-    // Devuelve la ruta más corta y su peso usando Dijkstra
-    pair<int, list<string>> dijkstraShortestPath(string start, string end);
+    void agregarNodo(string nodo); // Añade un nodo
+    vector<string> obtenerNodos() const; // Devuelve una lista de nodos
+    void agregarArista(string origen, string destino, int distancia = 0, bool dirigido = false);
+    void imprimirGrafo(); // Imprime el grafo
+    pair<int, list<string>> caminoMasCortoDijkstra(string inicio, string fin); // Devuelve la ruta mas corta
 };
+
 #endif

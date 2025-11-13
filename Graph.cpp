@@ -1,149 +1,112 @@
 #include "Graph.hpp"
 
 // Añade un nodo al mapa si no existe
-void Graph::addNode(string node)
+void Grafo::agregarNodo(string nodo)
 {
-    if (adjList.find(node) == adjList.end())
+    if (listaAdyacencia.find(nodo) == listaAdyacencia.end())
     {
-        adjList[node] = list<pair<string, int>>();
+        listaAdyacencia[nodo] = list<pair<string, int>>();
     }
 }
 
-// Método para obtener todos los nodos (ciudades)
-vector<string> Graph::getNodes() const
+vector<string> Grafo::obtenerNodos() const // Devuelve una lista de nodos
 {
-    vector<string> nodes;
-    for (const auto &pair : adjList)
+    vector<string> nodos;
+    for (const auto &par : listaAdyacencia)
     {
-        nodes.push_back(pair.first);
+        nodos.push_back(par.first);
     }
-    return nodes;
+    return nodos;
 }
 
-// Añade una arista (y los nodos si no existen)
-void Graph::addEdge(string src, string dest, int weight, bool directed)
+void Grafo::agregarArista(string origen, string destino, int distancia, bool dirigido)
 {
-    // Se asegura que los nodos existan (aunque en tu main ya están predefinidos, es buena práctica)
-    addNode(src);
-    addNode(dest);
+    agregarNodo(origen); // Asegura que el nodo de origen exista
+    agregarNodo(destino);
 
-    // Añade la arista de origen a destino
-    adjList[src].push_back(make_pair(dest, weight));
+    listaAdyacencia[origen].push_back(make_pair(destino, distancia));
 
-    if (!directed)
-    { // Si el grafo es no dirigido, añade la arista de vuelta
-        adjList[dest].push_back(make_pair(src, weight));
+    if (!dirigido)
+    {
+        listaAdyacencia[destino].push_back(make_pair(origen, distancia));
     }
 }
 
-// Imprime el grafo
-/*void Graph::printGraph()
+void Grafo::imprimirGrafo()
 {
-    for (auto &node : adjList)
+    // Itera sobre cada nodo en el mapa
+    for (auto &nodo : listaAdyacencia)
     {
-        cout << "Nodo " << node.first << " -> ";
-        for (auto &neighbor : node.second)
-        {
-            cout << "(" << neighbor.first << ", " << neighbor.second << ") ";
-        }
-        cout << endl;
-    }
-}*/
+        cout << "\nDesde [" << nodo.first << "]:" << endl;
 
-// En Graph.cpp
-
-void Graph::printGraph()
-{
-    // El título "Mapa de Conexiones" ya se imprime en tu Menu.cpp,
-    // así que aquí vamos directo al contenido.
-
-    // Itera sobre cada nodo (ciudad) en el mapa
-    for (auto &node : adjList)
-    {
-        // 'node.first' es el nombre de la ciudad de origen (ej. "Tegucigalpa")
-        // 'node.second' es la lista de sus vecinos
-
-        cout << "\nDesde [" << node.first << "]:" << endl;
-
-        // Revisa si esta ciudad tiene conexiones
-        if (node.second.empty())
+        if (nodo.second.empty())
         {
             cout << "  -> (No tiene conexiones registradas)" << endl;
         }
         else
         {
-            // Si tiene, itera sobre cada vecino en la lista
-            // 'neighbor' es un pair<string, int>
-            for (auto &neighbor : node.second)
+            for (auto &vecino : nodo.second)
             {
-                // 'neighbor.first' es el destino (ej. "San Pedro Sula")
-                // 'neighbor.second' es el peso (ej. 240)
-
-                // ¡AQUÍ ESTÁ EL CAMBIO!
-                // Imprimimos CADA vecino en su propia línea
-                cout << "  -> Conecta con [" << neighbor.first << "]";
-                cout << " (Distancia: " << neighbor.second << " km)" << endl;
+                cout << "  -> Conecta con [" << vecino.first << "]";
+                cout << " (Distancia: " << vecino.second << " km)" << endl;
             }
         }
     }
 }
 
-// Devuelve la ruta más corta y su peso usando Dijkstra
-pair<int, list<string>> Graph::dijkstraShortestPath(string start, string end)
+pair<int, list<string>> Grafo::caminoMasCortoDijkstra(string inicio, string fin)
 {
-    // ... (Implementación de Dijkstra es correcta, se mantiene) ...
-    map<string, int> distances;
-    map<string, string> predecessors;
-    priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> pq;
-    const int INF = 1e9;
+    map<string, int> distancias; // Distancias desde el nodo inicial
+    map<string, string> predecesores;
+    priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> colaPrioridad;
+    const int INFINITO = 1e9;
 
-    for (const auto &nodePair : adjList)
-        distances[nodePair.first] = INF;
-    distances[start] = 0;
-    pq.push({0, start});
+    for (const auto &parNodo : listaAdyacencia)
+        distancias[parNodo.first] = INFINITO;
+    distancias[inicio] = 0;
+    colaPrioridad.push({0, inicio});
 
-    while (!pq.empty())
+    while (!colaPrioridad.empty())
     {
-        int currentDist = pq.top().first;
-        string u = pq.top().second;
-        pq.pop();
+        int distanciaActual = colaPrioridad.top().first;
+        string u = colaPrioridad.top().second;
+        colaPrioridad.pop();
 
-        if (currentDist > distances[u])
+        if (distanciaActual > distancias[u])
             continue;
-        if (u == end)
+        if (u == fin)
             break;
 
-        for (const auto &neighborPair : adjList[u])
+        for (const auto &parVecino : listaAdyacencia[u])
         {
-            string v = neighborPair.first;
-            int weight = neighborPair.second;
+            string v = parVecino.first;
+            int distancia = parVecino.second;
 
-            if (distances[u] + weight < distances[v])
+            if (distancias[u] + distancia < distancias[v])
             {
-                distances[v] = distances[u] + weight;
-                predecessors[v] = u;
-                pq.push({distances[v], v});
+                distancias[v] = distancias[u] + distancia;
+                predecesores[v] = u;
+                colaPrioridad.push({distancias[v], v});
             }
         }
     }
 
-    list<string> path;
-    int totalWeight = distances[end];
+    list<string> camino;
+    int distanciaTotal = distancias[fin];
 
-    if (totalWeight == INF)
-        return {-1, path};
+    if (distanciaTotal == INFINITO)
+        return {-1, camino};
 
-    string currentNode = end;
-    while (currentNode != start)
+    string nodoActual = fin;
+    while (nodoActual != inicio)
     {
-        // Verificación para manejar el caso de nodo desconectado, aunque Dijkstra lo maneja con INF
-        if (predecessors.find(currentNode) == predecessors.end())
+        if (predecesores.find(nodoActual) == predecesores.end())
         {
-            return {-1, list<string>()}; // Ruta no encontrada
+            return {-1, list<string>()};
         }
-        path.push_front(currentNode);
-        currentNode = predecessors[currentNode];
+        camino.push_front(nodoActual);
+        nodoActual = predecesores[nodoActual];
     }
-    path.push_front(start);
-    return {totalWeight, path};
+    camino.push_front(inicio);
+    return {distanciaTotal, camino};
 }

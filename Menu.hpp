@@ -1,16 +1,15 @@
 #ifndef MENU_HPP
 #define MENU_HPP
 
+#include "Graph.hpp"
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
 
-#include "Graph.hpp" 
-#include <string>    
-#include <vector>    
-#include <map>       
-#include <list>     
-
-using namespace std; 
+using namespace std;
 
 void menu();
-pair<string, string> selectCities(Graph &g);
+pair<string, string> seleccionarCiudades(Grafo &g);
 
 #endif

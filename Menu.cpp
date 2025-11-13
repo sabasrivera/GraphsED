@@ -1,32 +1,31 @@
 #include "Menu.hpp"
 #include "Graph.hpp"
 
-
-pair<string, string> selectCities(Graph &g)
+pair<string, string> seleccionarCiudades(Grafo &g)
 {
-    vector<string> availableNodes = g.getNodes();
+    vector<string> nodosDisponibles = g.obtenerNodos();
     string origen, destino;
     int indiceOrigen, indiceDestino;
     bool seleccionValida;
 
-    if (availableNodes.empty())
+    if (nodosDisponibles.empty())
     {
         cout << "No hay ciudades en el mapa para seleccionar." << endl;
         return make_pair("", "");
     }
 
-    // --- SELECCIÓN DE ORIGEN ---
+    // Seleccion de origen
     do
     {
         cout << "\nSeleccione el punto de ORIGEN:" << endl;
-        for (size_t i = 0; i < availableNodes.size(); ++i)
+        for (size_t i = 0; i < nodosDisponibles.size(); ++i)
         {
-            cout << i + 1 << ". " << availableNodes[i] << endl;
+            cout << i + 1 << ". " << nodosDisponibles[i] << endl;
         }
         cout << "Opcion: ";
-        if (!(cin >> indiceOrigen) || indiceOrigen <= 0 || indiceOrigen > availableNodes.size())
+        if (!(cin >> indiceOrigen) || indiceOrigen <= 0 || indiceOrigen > nodosDisponibles.size())
         {
-            cout << "Opción inválida. Intente de nuevo." << endl;
+            cout << "Opcion no permitida intente de nuevo." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             seleccionValida = false;
@@ -37,30 +36,28 @@ pair<string, string> selectCities(Graph &g)
         }
     } while (!seleccionValida);
 
-    origen = availableNodes[indiceOrigen - 1];
+    origen = nodosDisponibles[indiceOrigen - 1];
 
-    // --- SELECCIÓN DE DESTINO ---
+    // Seleccin de destino
+    nodosDisponibles.erase(nodosDisponibles.begin() + (indiceOrigen - 1));
 
-    // Eliminar el origen de la lista para el destino
-    availableNodes.erase(availableNodes.begin() + (indiceOrigen - 1));
-
-    if (availableNodes.empty())
+    if (nodosDisponibles.empty())
     {
-        cout << "Solo hay una ciudad. No se puede establecer un destino diferente." << endl;
+        cout << "Solo hay una ciudad o no se puede establecer un destino diferente." << endl;
         return make_pair(origen, "");
     }
 
     do
     {
         cout << "\nSeleccione el punto de DESTINO:" << endl;
-        for (size_t i = 0; i < availableNodes.size(); ++i)
+        for (size_t i = 0; i < nodosDisponibles.size(); ++i)
         {
-            cout << i + 1 << ". " << availableNodes[i] << endl;
+            cout << i + 1 << ". " << nodosDisponibles[i] << endl;
         }
         cout << "Opcion: ";
-        if (!(cin >> indiceDestino) || indiceDestino <= 0 || indiceDestino > availableNodes.size())
+        if (!(cin >> indiceDestino) || indiceDestino <= 0 || indiceDestino > nodosDisponibles.size())
         {
-            cout << "Opción inválida. Intente de nuevo." << endl;
+            cout << "Opcion no permitida intente de nuevo." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             seleccionValida = false;
@@ -71,32 +68,30 @@ pair<string, string> selectCities(Graph &g)
         }
     } while (!seleccionValida);
 
-    destino = availableNodes[indiceDestino - 1];
+    destino = nodosDisponibles[indiceDestino - 1];
 
     return make_pair(origen, destino);
 }
 
-void menu(){
+void menu()
+{
     int seleccion;
-    Graph g;
-    // Las llamadas a addEdge también llaman implícitamente a addNode (buena práctica)
-    g.addEdge("Tegucigalpa", "Comayagua", 50);
-    g.addEdge("Tegucigalpa", "Danli", 80);
-    g.addEdge("Comayagua", "El Progreso", 85);
-    g.addEdge("Comayagua", "San Pedro Sula", 85);
-    g.addEdge("El Progreso", "San Pedro Sula", 84);
-    g.addEdge("San Pedro Sula", "La Ceiba", 130);
-    g.addEdge("La Ceiba", "Tela", 60);
-    g.addEdge("Danli", "Juticalpa", 110);
-    g.addEdge("Juticalpa", "Trujillo", 300);
-    g.addEdge("Trujillo", "Tela", 60);
-    
+    Grafo g;
+    g.agregarArista("Tegucigalpa", "Comayagua", 50);
+    g.agregarArista("Tegucigalpa", "Danli", 80);
+    g.agregarArista("Comayagua", "El Progreso", 85);
+    g.agregarArista("Comayagua", "San Pedro Sula", 85);
+    g.agregarArista("El Progreso", "San Pedro Sula", 84);
+    g.agregarArista("San Pedro Sula", "La Ceiba", 130);
+    g.agregarArista("La Ceiba", "Tela", 60);
+    g.agregarArista("Danli", "Juticalpa", 110);
+    g.agregarArista("Juticalpa", "Trujillo", 300);
+    g.agregarArista("Trujillo", "Tela", 60);
 
-    // Bucle principal para permitir múltiples operaciones
     do
     {
         cout << "====================================" << endl;
-        cout << "           HonduMaps                " << endl;
+        cout << "           RUTAS MAPAS                  " << endl;
         cout << "====================================" << endl;
         cout << "1. Ingresar nueva ciudad" << endl;
         cout << "2. Establecer conexiones y distancia" << endl;
@@ -107,11 +102,10 @@ void menu(){
         cout << "Seleccione una opcion: ";
         if (!(cin >> seleccion))
         {
-            cout << "\nEntrada invalida. Saliendo del programa." << endl;
+            cout << "\nEntrada no permitida programa finalizado." << endl;
             break;
         }
 
-        // Limpia el buffer después de leer el entero (necesario si después hay un getline o la entrada del case 1)
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         switch (seleccion)
@@ -123,8 +117,8 @@ void menu(){
             cout << "         Ingresando ciudad          " << endl;
             cout << "====================================" << endl;
             cout << "Nombre de la nueva ciudad: ";
-            getline(cin, ciudad); // Usa getline aquí, por eso se necesita el cin.ignore() arriba.
-            g.addNode(ciudad);
+            getline(cin, ciudad);
+            g.agregarNodo(ciudad);
             cout << "\nCiudad '" << ciudad << "' agregada." << endl;
             break;
         }
@@ -137,50 +131,46 @@ void menu(){
             cout << "      Establecer conexiones         " << endl;
             cout << "====================================" << endl;
 
-            pair<string, string> selection = selectCities(g);
-            origen = selection.first;
-            destino = selection.second;
+            pair<string, string> seleccionCiudades = seleccionarCiudades(g);
+            origen = seleccionCiudades.first;
+            destino = seleccionCiudades.second;
 
             if (origen.empty() || destino.empty())
             {
-                cout << "\nOperación cancelada o sin suficientes ciudades." << endl;
+                cout << "\nOperacion cancelada o sin suficientes ciudades." << endl;
                 break;
             }
 
-            // --- INGRESO DE DISTANCIA ---
-            cout << "\nIngrese la distancia (peso) entre " << origen << " y " << destino << ": ";
+            cout << "\nIngrese la distancia entre " << origen << " y " << destino << ": ";
             cin >> distancia;
 
-            // Añadir la conexión
-            g.addEdge(origen, destino, distancia);
-            cout << "\nConexión de " << origen << " a " << destino << " con distancia " << distancia << " establecida." << endl;
+            g.agregarArista(origen, destino, distancia);
+            cout << "\nConexion de " << origen << " a " << destino << " con distancia " << distancia << " establecida." << endl;
             break;
         }
         case 3:
         {
             cout << "====================================" << endl;
-            cout << "      Consultar Ruta Más Corta      " << endl;
+            cout << "      Consultar Ruta Mas Corta      " << endl;
             cout << "====================================" << endl;
 
-            // Uso de la función auxiliar para obtener origen y destino
-            pair<string, string> selection = selectCities(g);
-            string origen = selection.first;
-            string destino = selection.second;
+            pair<string, string> seleccionCiudades = seleccionarCiudades(g);
+            string origen = seleccionCiudades.first;
+            string destino = seleccionCiudades.second;
 
             if (origen.empty() || destino.empty())
             {
-                cout << "\nOperación cancelada o sin suficientes ciudades." << endl;
+                cout << "\nOperacion cancelada o sin suficientes ciudades." << endl;
                 break;
             }
 
-            // Ejecutar Dijkstra
-            pair<int, list<string>> result = g.dijkstraShortestPath(origen, destino);
-            int totalWeight = result.first;
-            list<string> path = result.second;
+            pair<int, list<string>> resultado = g.caminoMasCortoDijkstra(origen, destino);
+            int distanciaTotal = resultado.first;
+            list<string> camino = resultado.second;
 
             cout << "\n--- RESULTADO DE LA BUSQUEDA ---\n";
 
-            if (totalWeight == -1)
+            if (distanciaTotal == -1)
             {
                 cout << "No se encontro ninguna ruta entre " << origen << " y " << destino << "." << endl;
             }
@@ -189,19 +179,17 @@ void menu(){
                 cout << "Ruta Unica (Mas Corta):" << endl;
                 cout << " - ";
 
-                for (const string &city : path)
+                for (const string &ciudad : camino)
                 {
-                    cout << city;
-                    if (city != destino)
+                    cout << ciudad;
+                    if (ciudad != destino)
                     {
                         cout << " -> ";
                     }
                 }
                 cout << endl;
-
-                cout << " - Peso total: " << totalWeight << " km" << endl;
+                cout << " - Distancia total: " << distanciaTotal << " km" << endl;
             }
-
             break;
         }
         case 4:
@@ -209,17 +197,17 @@ void menu(){
             cout << "====================================" << endl;
             cout << "      Mapa de Conexiones            " << endl;
             cout << "====================================" << endl;
-            g.printGraph();
+            g.imprimirGrafo();
             break;
         }
         case 5:
         {
-            cout << "\nSaliendo del programa. ¡Hasta pronto!" << endl;
+            cout << "\nSaliendo del programa Hasta pronto" << endl;
             break;
         }
         default:
         {
-            cout << "\nOpcion invalida. Intente de nuevo." << endl;
+            cout << "\nOpcion invalida Intente de nuevo" << endl;
             break;
         }
         }
