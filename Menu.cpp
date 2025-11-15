@@ -3,8 +3,8 @@
 
 pair<string, string> seleccionarCiudades(Grafo &g)
 {
-    vector<string> nodosDisponibles = g.obtenerNodos();
-    string origen, destino;
+    vector<string> nodosDisponibles = g.obtenerNodos();// Obtener la lista de nodos que son cidudades
+    string origen, destino; 
     int indiceOrigen, indiceDestino;
     bool seleccionValida;
 

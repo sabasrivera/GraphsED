@@ -6,7 +6,7 @@ void Grafo::agregarNodo(string nodo)
     if (listaAdyacencia.find(nodo) == listaAdyacencia.end())
     {
         listaAdyacencia[nodo] = list<pair<string, int>>();
-    }
+    } //lista vacia de conexiones
 }
 
 vector<string> Grafo::obtenerNodos() const // Devuelve una lista de nodos
@@ -39,7 +39,7 @@ void Grafo::imprimirGrafo()
     {
         cout << "\nDesde [" << nodo.first << "]:" << endl;
 
-        if (nodo.second.empty())
+        if (nodo.second.empty()) //que el nodo no este vacio 
         {
             cout << "  -> (No tiene conexiones registradas)" << endl;
         }
@@ -54,6 +54,8 @@ void Grafo::imprimirGrafo()
     }
 }
 
+// Implementacion del algoritmo de Dijkstra para encontrar el camino mas corto
+
 pair<int, list<string>> Grafo::caminoMasCortoDijkstra(string inicio, string fin)
 {
     map<string, int> distancias; // Distancias desde el nodo inicial
@@ -61,26 +63,26 @@ pair<int, list<string>> Grafo::caminoMasCortoDijkstra(string inicio, string fin)
     priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> colaPrioridad;
     const int INFINITO = 1e9;
 
-    for (const auto &parNodo : listaAdyacencia)
+    for (const auto &parNodo : listaAdyacencia) // inicializa todas las distancias
         distancias[parNodo.first] = INFINITO;
     distancias[inicio] = 0;
     colaPrioridad.push({0, inicio});
 
     while (!colaPrioridad.empty())
     {
-        int distanciaActual = colaPrioridad.top().first;
+        int distanciaActual = colaPrioridad.top().first; //ciclo principal
         string u = colaPrioridad.top().second;
         colaPrioridad.pop();
 
-        if (distanciaActual > distancias[u])
+        if (distanciaActual > distancias[u]) //se ignora
             continue;
         if (u == fin)
-            break;
+            break; //si se llega al nodo final, se termina el algoritmo
 
         for (const auto &parVecino : listaAdyacencia[u])
         {
             string v = parVecino.first;
-            int distancia = parVecino.second;
+            int distancia = parVecino.second; 
 
             if (distancias[u] + distancia < distancias[v])
             {
@@ -92,7 +94,7 @@ pair<int, list<string>> Grafo::caminoMasCortoDijkstra(string inicio, string fin)
     }
 
     list<string> camino;
-    int distanciaTotal = distancias[fin];
+    int distanciaTotal = distancias[fin]; // Distancia total al nodo final
 
     if (distanciaTotal == INFINITO)
         return {-1, camino};
